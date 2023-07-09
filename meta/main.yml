@@ -1,12 +1,13 @@
 galaxy_info:
+  role_name: mariabackup
   author: David Brutoczki
   description: Role for mariabackup
   min_ansible_version: "2.1"
   license: MIT
 
   platforms:
-  - name: Debian
-    versions:
-    - buster
+    - name: Debian
+      versions:
+        - buster
 
   galaxy_tags: [mariabackup, mariadb, backup]
