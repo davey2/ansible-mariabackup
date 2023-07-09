@@ -1,0 +1,12 @@
+#!/bin/bash
+
+OLD_BACKUP={{ old_backup }}
+
+for BACKUP in $(find $BACKUP_ROOT/*/0 -maxdepth 1 -type f -name xtrabackup_info); do
+	END_TIME=$(date --date="$(grep end_time $BACKUP | awk -F " = " '{print $2}')" +%s)
+	TIME_DIFF=$(( $(date +%s) - $END_TIME ))
+	if [[ $TIME_DIFF -gt $OLD_BACKUP ]]; then
+		rm -r $(dirname $(dirname $BACKUP))
+		echo "DELETED BACKUP: $(dirname $(dirname $BACKUP))"
+	fi
+done

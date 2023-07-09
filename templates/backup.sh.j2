@@ -1,0 +1,27 @@
+#!/bin/bash
+
+CURRENT_BACKUP_DIR="$BACKUP_ROOT/$(date +%Y-%U)"
+
+ulimit -n 65535
+
+if BACKUPS=$(find $CURRENT_BACKUP_DIR -type f -name xtrabackup_info); then
+	# Backup exist, find the latest backup
+
+	LATEST_BACKUP=""
+	LATEST_END_TIME=0
+
+	for BACKUP in $BACKUPS; do
+		END_TIME=$(date --date="$(grep end_time $BACKUP | awk -F " = " '{print $2}')" +%s)
+
+		if (( END_TIME > LATEST_END_TIME )); then
+			LATEST_BACKUP=$(dirname $BACKUP)
+			LATEST_END_TIME=$END_TIME
+		fi
+	done
+
+	mariabackup --backup --target-dir=$CURRENT_BACKUP_DIR/$(date +%w-%H%M%S) --incremental-basedir=$LATEST_BACKUP {{ extra_options}}
+else
+	# No backup exist, create a full backup
+	mkdir $CURRENT_BACKUP_DIR
+	mariabackup --backup --target-dir=$CURRENT_BACKUP_DIR/0 {{ extra_options }}
+fi

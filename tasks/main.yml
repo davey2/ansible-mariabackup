@@ -1,0 +1,32 @@
+- name: Install mariabackup
+  ansible.builtin.apt:
+    name: mariadb-backup
+
+- name: Copy backup script
+  ansible.builtin.template:
+    src: backup.sh.j2
+    dest: "{{ scripts_dir }}/backup.sh"
+    mode: 755
+
+- name: Copy rotate script
+  ansible.builtin.template:
+    src: rotate.sh.j2
+    dest: "{{ scripts_dir }}/rotate.sh"
+    mode: 755
+
+- name: Copy the maribackup systemd service file
+  ansible.builtin.template:
+    src: mariabackup.service.j2
+    dest: /etc/systemd/system/mariabackup.service
+
+- name: Copy the maribackup systemd timer file
+  ansible.builtin.template:
+    src: mariabackup.timer.j2
+    dest: /etc/systemd/system/mariabackup.timer
+
+- name: Enable timer
+  ansible.builtin.systemd:
+    name: mariabackup.timer
+    daemon_reload: true
+    enabled: true
+    state: started

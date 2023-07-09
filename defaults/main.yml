@@ -1,0 +1,6 @@
+scripts_dir: /opt
+backup_root: /mnt/backup
+old_backup: 1296000
+cron: "*-*-* 18:00:00"
+weekly_full_backup: true
+extra_options: ""
