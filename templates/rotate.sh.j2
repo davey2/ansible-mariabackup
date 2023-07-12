@@ -1,12 +1,18 @@
 #!/bin/bash
 
-OLD_BACKUP={{ old_backup }}
+NUM_BACKUPS_TO_KEEP={{ keep_backup }}
 
-for BACKUP in $(find $BACKUP_ROOT/*/0 -maxdepth 1 -type f -name xtrabackup_info); do
-	END_TIME=$(date --date="$(grep end_time $BACKUP | awk -F " = " '{print $2}')" +%s)
-	TIME_DIFF=$(( $(date +%s) - $END_TIME ))
-	if [[ $TIME_DIFF -gt $OLD_BACKUP ]]; then
-		rm -r $(dirname $(dirname $BACKUP))
-		echo "DELETED BACKUP: $(dirname $(dirname $BACKUP))"
-	fi
+BACKUPS=()
+for BACKUP in $BACKUP_ROOT/*/0/xtrabackup_info; do
+	END_TIME=$(grep end_time $BACKUP | awk -F " = " '{print $2}')
+	BACKUPS+=("$(dirname $(dirname $BACKUP))|$END_TIME")
+done
+
+IFS=$'\n' BACKUPS=($(sort -rt '|' -k2 <<< ${BACKUPS[*]}))
+unset IFS
+
+for ((i = NUM_BACKUPS_TO_KEEP; i < ${#BACKUPS[@]}; i++)); do
+	BACKUP=$(echo ${BACKUPS[$i]} | awk -F "|" '{print $1}')
+	rm -r $BACKUP
+	echo "DELETED BACKUP: $BACKUP"
 done
