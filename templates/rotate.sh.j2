@@ -11,7 +11,7 @@ done
 IFS=$'\n' BACKUPS=($(sort -rt '|' -k2 <<< ${BACKUPS[*]}))
 unset IFS
 
-for ((i = NUM_BACKUPS_TO_KEEP; i < ${#BACKUPS[@]}; i++)); do
+for ((i = NUM_BACKUPS_TO_KEEP; i < ${{ '{#' }}BACKUPS[@]}; i++)); do
 	BACKUP=$(echo ${BACKUPS[$i]} | awk -F "|" '{print $1}')
 	rm -r $BACKUP
 	echo "DELETED BACKUP: $BACKUP"
