@@ -18,4 +18,7 @@ Ansible role for creating full and incremental backups of MariaDB and rotating b
 - hosts: mariadb
   roles:
     - role: davey2.mariabackup
+      vars:
+        extra_options: "--user=root --no-lock --binlog-info=OFF"
+        keep_backup: 2
 ```
