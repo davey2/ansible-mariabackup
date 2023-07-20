@@ -3,5 +3,4 @@ Description=MariaDB Backup service
 
 [Service]
 Environment="BACKUP_ROOT={{ backup_root}}"
-ExecStartPre={{ scripts_dir }}/rotate.sh
 ExecStart={{ scripts_dir }}/backup.sh

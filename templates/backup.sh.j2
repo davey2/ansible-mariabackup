@@ -21,6 +21,9 @@ if BACKUPS=$(find $CURRENT_BACKUP_DIR -type f -name xtrabackup_info); then
 
 	mariabackup --backup --target-dir=$CURRENT_BACKUP_DIR/$(date +%w-%H%M%S) --incremental-basedir=$LATEST_BACKUP {{ extra_options}}
 else
+	# Delete old backups
+	bash {{ scripts_dir }}/rotate.sh
+
 	# No backup exist, create a full backup
 	mkdir $CURRENT_BACKUP_DIR
 	mariabackup --backup --target-dir=$CURRENT_BACKUP_DIR/0 {{ extra_options }}
